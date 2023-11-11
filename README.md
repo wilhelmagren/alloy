@@ -1,61 +1,31 @@
-![Builds](https://github.com/Ignalina/alloy/actions/workflows/builds.yml/badge.svg)
-![Rust tests](https://github.com/Ignalina/alloy/actions/workflows/rust-tests.yml/badge.svg)
-![Go tests](https://github.com/Ignalina/alloy/actions/workflows/go-tests.yml/badge.svg)
 
-![alloy](https://raw.githubusercontent.com/Ignalina/alloy/main/images/alloy.svg)<br>
+## 🔎 Overview
+*alloy* is a **Go module that enables calls to Rust code with Apache Arrow datatypes**, and vice versa.
 
-Full design/build/deploy doc se [doc/README](doc/README.md)
+The overarching goal is to enable calls between languages through an underlying **C** interface, utilizing **cgo** and **Rust ffi**. 
+This implementation comes with close to no overhead due to using the Apache Arrow data format. The only thing sent between the language binaries are raw data pointers referencing the allocated memory (in Arrow format). This allows for
+fast, (somewhat) robust, and colorful use cases in data engineering scenarios.
 
-An GO module allowing calls to Rust code code with Apache Arrow data. Operate in either one-shot mode or IPC streaming.  
-An example application in need of this is Thund , An Go/Rust based Apache Arrow centric DAG executor
+Alloy means a mixture between two or more components and is (currently) a joint vernture between Rickard Ernst Björn Lundin (Go) and Wilhelm Ågren (Rust). If this project invokes interest in you, the reader, *feel free to contribute in any way or form*.
 
-Alloy means a mixture between two or more components and is a joint venture between Wilhelm Ågren (Rust)  and Rickard Lundin(GO).
+## 📦 Installation
+...
 
-## Usage example
-The example main.go should envision how your GO application utilize Alloy.
+## 🚀 Example usage
 
-```golang
-func main() {
-	mem := memory.NewGoAllocator()
+The example file [main.go](./main.go) should envision how your Go application could utilize *alloy* to call Rust code.
 
-	var b api.Bridge
-	b = rust.Bridge{api.CommonParameter{mem}}
+<details>
+    <summary>Show example code</summary>
 
-	values := [][]int32{
-		{1, 2, 3, -4},
-		{2, 3, 4, 5},
-		{3, 4, 5, 6},
-	}
+```go
+package main
 
-	builders, arrays := buildAndAppend(mem, values)
+...
 
-	ret, err := b.FromChunks(arrays)
-
-	if nil != err {
-		fmt.Println(err)
-	} else {
-		rust.Info(fmt.Sprintf("Rust counted %v arrays sent through ffi", ret))
-	}
-}
 ```
+    
+</details>
 
-Output, where default dummy Rust backend echoes out the sent data. It will be up to the Rust guys to implent code to process the data to their hearts content !!
-
-
-```bash
-$ ./alloy
-[2022-10-17 18:09:34] [INFO] [Go]	Exporting ArrowSchema and ArrowArray #1 to C
-[2022-10-17 18:09:34] [INFO] [Go]	Exporting ArrowSchema and ArrowArray #2 to C
-[2022-10-17 18:09:34] [INFO] [Go]	Exporting ArrowSchema and ArrowArray #3 to C
-[2022-10-17 18:09:34] [INFO] [Go]	Calling Rust through C rust now with 3 ArrowArrays
-[2022-10-17 18:09:34] [INFO] [Rust]	Hello! Reading the rust pointers now.
-[2022-10-17 18:09:34] [INFO] [Rust]	array1: Int32[1, 2, 3, -4]
-[2022-10-17 18:09:34] [INFO] [Rust]	array2: Int32[2, 3, 4, 5]
-[2022-10-17 18:09:34] [INFO] [Rust]	array3: Int32[3, 4, 5, 6]
-[2022-10-17 18:09:34] [INFO] [Go]	Hello, again! Successfully sent Arrow data to Rust.
-[2022-10-17 18:09:34] [INFO] [Go]	Rust counted 3 arrays sent through rust
-```
-
-
-## License
-All code written is to be held under a general MIT-license, please see [LICENSE](https://github.com/Ignalina/alloy/blob/main/LICENSE) for specific information.
+## 📋 License
+All code is to be held under a general MIT license, please see [LICENSE](https://github.com/wilhelmagren/alloy/blob/main/LICENSE) for specific information.
